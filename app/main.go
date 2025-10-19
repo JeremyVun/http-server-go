@@ -1,26 +1,27 @@
 package main
 
 import (
+	"strconv"
 	"io"
 	"fmt"
 	"net"
 	"os"
 	"log"
+	"flag"
 )
 
-// Ensures gofmt doesn't remove the "net" and "os" imports above (feel free to remove this!)
-var _ = net.Listen
-var _ = os.Exit
-
 func main() {
-	// You can use print statements as follows for debugging, they'll be visible when running tests.
-	fmt.Println("Logs from your program will appear here!")
+	portPtr := flag.Int("p", 8080, "Port")
+	flag.Parse()
+	port := *portPtr
+	fmt.Printf("Starting server on port %d\n", port)
 
-	l, err := net.Listen("tcp", ":4221")
+	l, err := net.Listen("tcp", ":" + strconv.Itoa(port))
 	if err != nil {
-		fmt.Println("Failed to bind to port 4221")
+		fmt.Printf("Failed to bind to port %d\n - %s", port, err)
 		os.Exit(1)
 	}
+	fmt.Printf("Listening on port %d\n", port)
 	defer l.Close() // close the listener when this function ends
 
 	for {
@@ -36,7 +37,8 @@ func main() {
 
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
-	// Read from connection until we got everything
+
+	// Parse the request from the Http Connection
 	request, err := parseRequest(conn)
 	if (err != nil) {
 		log.Fatal(err)
@@ -45,12 +47,12 @@ func handleConnection(conn net.Conn) {
 
 	response := handleRequest(request)
 
-	// write to conn
+	// Write response back to connection
+	contentLength := len(response.Body) +1
 	io.WriteString(conn, "HTTP/1.1 " + string(response.Status) + "\r\n" +
 		"Content-Type: text/plain; charset=utf-8\r\n" +
-		"Content-Length: 12\r\n" +
+		"Content-Length: " + strconv.Itoa(contentLength) + "\r\n" +
 		"\r\n" +
-		"hello world\n",
+		response.Body + "\n",
 	)
-	println("RESPONSE WRITTEN")
 }

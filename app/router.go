@@ -1,22 +1,17 @@
 package main
 
-import(
-	"fmt"
-)
-
 var router = map[RouteKey]func(*HttpRequest)HttpResponse {
-	{Method: GET, Path: "/path"}: Hello,
+	{Method: GET, Path: "/hello"}: Hello,
 }
 
 func Hello(request *HttpRequest) HttpResponse {
-	println("hello!")
 	return HttpResponse {
 		Status: OK,
+		Body: "hello world!",
 	}
 }
 
 func handleRequest(request *HttpRequest) HttpResponse {
-	fmt.Printf("%+v\n", request)
 	if handler, exists := router[request.RouteKey]; exists {
 		return handler(request)
 	}

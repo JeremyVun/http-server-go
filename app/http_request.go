@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"bufio"
 	"strings"
 	"net"
@@ -40,6 +41,9 @@ func parseRequest(conn net.Conn) (*HttpRequest, error) {
 	requestLineBytes, _ := r.ReadBytes('\n')
 	requestLineTokens := strings.Split(string(requestLineBytes), " ")
 	method := HttpMethod(requestLineTokens[0])
+	if _, validMethod := validMethods[method]; !validMethod {
+		return nil, fmt.Errorf("Invalid HttpMethod: %s", method)
+	}
 	path := requestLineTokens[1]
 	scheme := requestLineTokens[2]
 
@@ -56,6 +60,7 @@ func parseRequest(conn net.Conn) (*HttpRequest, error) {
 	}
 
 	// parse body
+	// TODO
 
 	return &HttpRequest {
 		RouteKey: RouteKey{Method: method, Path: path},
