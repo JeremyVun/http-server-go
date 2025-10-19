@@ -1,0 +1,19 @@
+## http server
+1. build it from scratch
+2. http 1.1 protocol
+    - problems
+    - http 2
+3. how fast should it actually be?
+    - First principles
+    - golang net library
+        - route to controller, return 200 OK
+        - compared to spring boot?
+        - golang sys calls?
+        - TPS?
+        - kotlin coroutines
+        - java
+    - compare metrics
+    - size, memory footprint, tps
+    - extensibility (middleware, routing)
+4. 
+

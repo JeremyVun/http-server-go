@@ -1,0 +1,49 @@
+## TCP / TLS anatomy
+- 1 TCP round trip. SYN -> SYN+ACK
+- 2 TLS round trip. verify server cert and key exchange. But this can be longer due to the initial congestion window if data is larger
+- 1 HTTP round trip to request.
+
+Web will always be slower. Has to make this new connection each time. Http 2 instead of 1.1
+
+## HTTP Request anatomy
+<RequestLine>CRLF
+<Headers>CRLF
+<Body>
+
+### Request Line
+"METHOD target HTTP-version CRLF"
+e.g. GET /path?a=b HTTP/1.1\r\n
+
+### HEaders
+key:value\r\n
+key:value\r\n
+\r\n
+
+Need a state machine, inefficient
+
+### Body
+Don't know if there's a body until we know the content length..!!
+- Sequential dependency
+
+Problems
+1. Sequential parsing
+2. text parsing
+3. no header compression. common headers
+4. 
+
+TCP slow start. 12 kb. 
+initial congestion window
+text parsing vs binary parsing
+HTTP 2 - hybrid protocol
+    - no more scanning for delimiters.
+    - binary framing of the sections. Fixed length fields
+    - header compression using huffman encoding. shared header tables. only diffs sent
+    - multiplexing to avoid head of line blocking
+        2. **High-latency connections** (like mobile networks)
+           - HTTP/1.1: Multiple round trips per resource
+           - HTTP/2: Parallel requests in a single connection
+           - Result: Often 2-5 second improvements on 3G/4G networks
+
+https://sirupsen.com/napkin/problem-15
+
+Why is JSON a problem?
