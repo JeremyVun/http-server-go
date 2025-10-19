@@ -21,9 +21,11 @@ func main() {
 		fmt.Printf("Failed to bind to port %d\n - %s", port, err)
 		os.Exit(1)
 	}
-	fmt.Printf("Listening on port %d\n", port)
-	defer l.Close() // close the listener when this function ends
 
+	fmt.Printf("Listening on port %d\n", port)
+	defer l.Close()
+
+	// http server event loop
 	for {
 		conn, err := l.Accept()
 		if err != nil {
@@ -48,7 +50,7 @@ func handleConnection(conn net.Conn) {
 	response := handleRequest(request)
 
 	// Write response back to connection
-	contentLength := len(response.Body) +1
+	contentLength := len(response.Body) + 1
 	io.WriteString(conn, "HTTP/1.1 " + string(response.Status) + "\r\n" +
 		"Content-Type: text/plain; charset=utf-8\r\n" +
 		"Content-Length: " + strconv.Itoa(contentLength) + "\r\n" +

@@ -1,19 +1,20 @@
 ## http server
-1. build it from scratch
-2. http 1.1 protocol
+[x] build it from scratch
+[] use sys calls instead of net lib
+[] how fast should it actually be from first principles?
+    - baseline
+    - springboot?
+    - startup time, size, memory footprint, tps
+[] test suite
+[] http 1.1 protocol write up
     - problems
-    - http 2
-3. how fast should it actually be?
-    - First principles
-    - golang net library
-        - route to controller, return 200 OK
-        - compared to spring boot?
-        - golang sys calls?
-        - TPS?
-        - kotlin coroutines
-        - java
-    - compare metrics
-    - size, memory footprint, tps
-    - extensibility (middleware, routing)
-4. 
+    - tcp slow start
+[] http 2
+[] java
+[] kotlin
+[] controllers / middleware / serializers / config
+    - compared to spring boot?
 
+Where is all the time being spent?
+[] JSON investigation
+    - text vs binary protocols
