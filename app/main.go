@@ -1,20 +1,23 @@
 package main
 
 import (
+	"bufio"
 	"strconv"
 	"io"
 	"fmt"
 	"net"
 	"os"
-	"log"
 	"flag"
+	"time"
 )
 
 func main() {
 	portPtr := flag.Int("p", 8080, "Port")
+	keepAlivePtr := flag.Bool("ka", false, "Keep Alive")
 	flag.Parse()
 	port := *portPtr
-	fmt.Printf("Starting server on port %d\n", port)
+	isPipeliningAllowed := *keepAlivePtr
+	fmt.Printf("Starting server on port %d. Pipelining: %v\n", port, isPipeliningAllowed)
 
 	l, err := net.Listen("tcp", ":" + strconv.Itoa(port))
 	if err != nil {
@@ -33,28 +36,46 @@ func main() {
 			os.Exit(1)
 		}
 
-		go handleConnection(conn)
+		go handleConnection(conn, isPipeliningAllowed)
 	}
 }
 
-func handleConnection(conn net.Conn) {
+func handleConnection(conn net.Conn, isPipeliningAllowed bool) {
+	// fmt.Println("Handling new connection from", conn.RemoteAddr())
+	conn.SetDeadline(time.Now().Add(10 * time.Second))
 	defer conn.Close()
 
-	// Parse the request from the Http Connection
-	request, err := parseRequest(conn)
-	if (err != nil) {
-		log.Fatal(err)
-		return
+	for {
+		// Parse request from the Connection
+		reader := bufio.NewReader(conn)
+		requestLine, err := parseRequestLine(reader)
+		if (err != nil) {
+			break
+		}
+
+		headers := parseHeaders(reader)
+		requestContentLength, err := strconv.Atoi(headers["content-length"])
+		if (err != nil) {
+			requestContentLength = -1
+		}
+		body := parseBody(reader, requestContentLength)
+
+		request := HttpRequest {
+			RequestLine: *requestLine,
+			Headers: headers,
+			Body: body,
+		}
+
+		// Handle the request
+		response := handleRequest(&request)
+
+		// Write response back to connection\
+		io.WriteString(conn, response.ToHttpResponseString(isPipeliningAllowed))
+
+		if (!isPipeliningAllowed) {
+			break
+		}
 	}
 
-	response := handleRequest(request)
-
-	// Write response back to connection
-	contentLength := len(response.Body) + 1
-	io.WriteString(conn, "HTTP/1.1 " + string(response.Status) + "\r\n" +
-		"Content-Type: text/plain; charset=utf-8\r\n" +
-		"Content-Length: " + strconv.Itoa(contentLength) + "\r\n" +
-		"\r\n" +
-		response.Body + "\n",
-	)
+	// fmt.Println("Closing connection from", conn.RemoteAddr())
 }

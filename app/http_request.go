@@ -1,21 +1,15 @@
 package main
 
-import (
-	"fmt"
-	"bufio"
-	"strings"
-	"net"
-)
-
-type RouteKey struct {
+type RequestLine struct {
+	Scheme string
 	Method HttpMethod
 	Path string
 }
 
 type HttpRequest struct {
-	RouteKey
-	Scheme string
+	RequestLine
 	Headers map[string]string
+	Body *string
 }
 
 type HttpMethod string
@@ -32,39 +26,4 @@ var validMethods = map[HttpMethod]struct{} {
 	PUT: {},
 	DELETE: {},
 	PATCH: {},
-}
-
-func parseRequest(conn net.Conn) (*HttpRequest, error) {
-	r := bufio.NewReader(conn)
-
-	// parse request line
-	requestLineBytes, _ := r.ReadBytes('\n')
-	requestLineTokens := strings.Split(string(requestLineBytes), " ")
-	method := HttpMethod(requestLineTokens[0])
-	if _, validMethod := validMethods[method]; !validMethod {
-		return nil, fmt.Errorf("Invalid HttpMethod: %s", method)
-	}
-	path := requestLineTokens[1]
-	scheme := requestLineTokens[2]
-
-	// parse headers
-	headers := make(map[string]string)
-	for {
-		bytes, _ := r.ReadBytes('\n')
-		line := string(bytes)
-		if (line == "\r\n") {
-			break
-		}
-		header := strings.SplitN(line, ":", 2)
-		headers[header[0]] = header[1]
-	}
-
-	// parse body
-	// TODO
-
-	return &HttpRequest {
-		RouteKey: RouteKey{Method: method, Path: path},
-		Scheme: scheme,
-		Headers: headers,
-	}, nil
 }

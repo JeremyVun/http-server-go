@@ -1,0 +1,25 @@
+1. Http 1.1 schema
+
+2. round trips
+    1 TCP
+    2 SSL
+    x http
+
+2. Keep alive
+    - head of line blocking!
+    - misconfigured content-length. messes up all further reads
+    - terrible protocol. over/under send issue. Have to close connection and re-establish
+        - at worst, we could potentially cause memory overflow
+        - It wil throw on a perfectly fine connection, not the misbehaving one
+    - quick search. security vulnerability.
+        - disable pipelining
+        - I can send more bytes (my malicious request), and under specify the content-length
+        - it is fundamentally flawed
+
+    - Jmeter sends this header. How can we stop it?
+        - every second request fails
+        - Send connection: close
+3. pipelining has huge benefits
+    - when not cpu blocked on requests using simple HelloHandler
+4. pipelining with head of line blocking?
+    - if no head of line blocking
