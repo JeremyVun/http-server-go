@@ -31,7 +31,7 @@ Problems
 3. no header compression. common headers
 4. 
 
-TCP slow start. 12 kb. 
+TCP slow start. 12 kb.
 initial congestion window
 text parsing vs binary parsing
 HTTP 2 - hybrid protocol

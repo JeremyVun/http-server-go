@@ -15,11 +15,11 @@
         - disable pipelining
         - I can send more bytes (my malicious request), and under specify the content-length
         - it is fundamentally flawed
+        - http request smuggling
 
     - Jmeter sends this header. How can we stop it?
         - every second request fails
         - Send connection: close
 3. pipelining has huge benefits
     - when not cpu blocked on requests using simple HelloHandler
-4. pipelining with head of line blocking?
-    - if no head of line blocking
+4. pipelining and head of line blocking
