@@ -1,20 +1,25 @@
 ## http server
 [x] build it from scratch
-[] use sys calls instead of net lib
-[] how fast should it actually be from first principles?
+[x] sys calls
+[x] how fast should it actually be from first principles?
     - baseline
-    - springboot?
     - startup time, size, memory footprint, tps
-[] test suite
-[] http 1.1 protocol write up
-    - problems
+[x] http 1.1 protocol write up
+    - pipeline desyncing
+    - hol blocking
+    - connection round trips
     - tcp slow start
+    - text based protocol vs binary
+    - sequential parsing
+    - http 1.1 / 2 Austin. springboot slow
+[] http 1.1 java
+[] http 1.1 kotlin
 [] http 2
-[] java
-[] kotlin
+[] UDP / http 3 / QUIC
 [] controllers / middleware / serializers / config
     - compared to spring boot?
 
-Where is all the time being spent?
+## JSON parsing
 [] JSON investigation
     - text vs binary protocols
+    - stack frame mem overflow - QTA

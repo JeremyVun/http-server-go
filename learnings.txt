@@ -23,3 +23,18 @@
 3. pipelining has huge benefits
     - when not cpu blocked on requests using simple HelloHandler
 4. pipelining and head of line blocking
+
+
+Sys calls
+1. Create FD socket - https://dev.to/hgsgtk/how-go-handles-network-and-system-calls-when-tcp-server-1nbd
+    - listenStream
+    - sysCall("bind", fd, local socket address)
+        - socket is just a socket. Needs to be bound to an underlying resource
+        - OS sees packets coming into a port with an ip address. It needs to route to the bound sockets
+    - sysCall("listen", fd). set socket as passive. accepting incoming connections. backlog of connections
+        - get it to listen for the SYN packet
+        - UDP wouldn't call listen. instead directly read write from the socket
+    - FD is process scoped map of an identifier to an system IO resource
+
+2. new_connection_fd = sysCall("accept", fd)
+    - read from the fd
